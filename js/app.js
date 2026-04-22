@@ -1857,8 +1857,9 @@
             // Per-slice wrapper for staggered reveal animation
             const sliceG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             sliceG.setAttribute('class', 'slice-wrap');
-            const sliceStart = pieOff + (i / Math.max(1, slices.length - 1)) * 0.18;
             const sliceSpan  = 0.12;
+            const staggerRange = Math.max(0.05, 1.0 - pieOff - sliceSpan);
+            const sliceStart = pieOff + (i / Math.max(1, slices.length - 1)) * staggerRange;
             sliceG._revealStart = sliceStart;
             sliceG._revealSpan  = sliceSpan;
             sliceG.setAttribute('data-start', sliceStart.toFixed(3));
