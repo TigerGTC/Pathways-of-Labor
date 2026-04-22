@@ -840,7 +840,7 @@
         return this.#countryMeshes.length;
       }
 
-      // ── setCountryBorders ──── solid = sending; dashed = receiving ───
+      // ── setCountryBorders ──── dashed = sending; solid = receiving ───
       setCountryBorders(geojson, originIso3Set, destIso3Set) {
         for (const m of this.#borderMeshes) {
           m.geometry.dispose();
@@ -879,9 +879,9 @@
           let isSolid = false;
           let isDashed = false;
           if (originIso3Set.has(iso3)) {
-            isSolid = true;
-          } else if (destIso3Set.has(iso3)) {
             isDashed = true;
+          } else if (destIso3Set.has(iso3)) {
+            isSolid = true;
           } else {
             continue;
           }
