@@ -2044,40 +2044,6 @@
         let lastAppliedReveal = -1;
         let globePaused = false;
 
-        // ── Pie slice animation (time-based, triggered by reveal) ──
-        let pieAnimRunning = false;
-        const pieSliceEls = [
-          ...(pieDestScale ? pieDestScale.querySelectorAll('.slice-wrap') : []),
-          ...(pieOrigScale ? pieOrigScale.querySelectorAll('.slice-wrap') : []),
-        ];
-
-        const resetPieSlices = () => {
-          for (const g of pieSliceEls) {
-            g.setAttribute('transform', 'rotate(-35) scale(0.2)');
-            g.style.opacity = '0';
-          }
-        };
-
-        const startPieAnim = () => {
-          const duration = 1200;
-          const t0 = performance.now();
-          const tick = (now) => {
-            if (!pieAnimRunning) return;
-            const t = clamp((now - t0) / duration, 0, 1);
-            for (const g of pieSliceEls) {
-              const idx = g._sliceIdx || 0;
-              const cnt = g._sliceCount || 1;
-              const delay = (idx / Math.max(1, cnt - 1)) * 0.4;
-              const local = clamp((t - delay) / (1 - delay), 0, 1);
-              const e = easeOutCubic(local);
-              g.setAttribute('transform', `rotate(${((1 - e) * -35).toFixed(2)}) scale(${(0.2 + e * 0.8).toFixed(3)})`);
-              g.style.opacity = e.toFixed(3);
-            }
-            if (t < 1) requestAnimationFrame(tick);
-          };
-          requestAnimationFrame(tick);
-        };
-
         // applyVisuals(r) — drives all visuals from a single value r ∈ [0,1]
         const applyVisuals = (r) => {
           if (Math.abs(r - lastAppliedReveal) < 0.002 && r !== 0 && r !== 1) return;
@@ -2091,13 +2057,20 @@
           if (r >= 0.95 && !globePaused) { globe.stop(); globePaused = true; }
           else if (r < 0.95 && globePaused) { globe.start(); globePaused = false; }
 
-          // Pie animation — starts when pies become visible, runs on its own clock
-          if (r >= 0.65 && !pieAnimRunning) {
-            pieAnimRunning = true;
-            startPieAnim();
-          } else if (r < 0.3 && pieAnimRunning) {
-            pieAnimRunning = false;
-            resetPieSlices();
+          // Per-slice staggered reveal — driven by r like the hero count-up
+          const pieP = clamp((r - 0.5) / 0.5, 0, 1);
+          const pieGroups = [
+            ...(pieDestScale ? pieDestScale.querySelectorAll('.slice-wrap') : []),
+            ...(pieOrigScale ? pieOrigScale.querySelectorAll('.slice-wrap') : []),
+          ];
+          for (const g of pieGroups) {
+            const idx = g._sliceIdx || 0;
+            const cnt = g._sliceCount || 1;
+            const delay = (idx / Math.max(1, cnt - 1)) * 0.35;
+            const local = clamp((pieP - delay) / (1 - delay), 0, 1);
+            const e = easeOutCubic(local);
+            g.setAttribute('transform', `rotate(${((1 - e) * -35).toFixed(2)}) scale(${(0.2 + e * 0.8).toFixed(3)})`);
+            g.style.opacity = e.toFixed(3);
           }
 
           // Hero count-up and scale — window shifted so animations play during the visible slide
@@ -2124,7 +2097,7 @@
             // Snap / close — animate animatedReveal → revealProgress over 700ms
             const startVal = animatedReveal;
             const endVal   = revealProgress;
-            const duration = 700;
+            const duration = 1200;
             const startTime = performance.now();
 
             const tick = (now) => {
