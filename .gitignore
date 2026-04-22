@@ -1,0 +1,6 @@
+.DS_Store
+*.log
+node_modules/
+
+# Full-res source texture (7.7MB) — use assets/night-earth-web.jpg instead
+src/assets/night-earth.jpg

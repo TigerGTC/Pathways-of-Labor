@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.worldbank.org https://restcountries.com; object-src 'none'; base-uri 'self';">
+  <title>Pathways of Labor — Interactive Globe</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.2/dist/index.global.js"
+          integrity="sha384-VAyuBHsdFUMC23V8p+TBco2mRRsJq+VcYWCt6sTzkGhZ23TClYSk9wL3DAQk2oFT"
+          crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/earcut@2.2.4/dist/earcut.min.js"
+          integrity="sha384-2H0pAXlHBLfkdkuPuERxxSBlz7fMZ2EqrwxccEG7J9Svyk1SbUDaknB5UCoel/ZX"
+          crossorigin="anonymous"></script>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-black overflow-hidden">
+
+  <!-- Intro overlay -->
+  <div id="introOverlay" role="dialog" aria-label="Intro sequence">
+    <div id="introQuestion"><span id="introText"></span><span class="caret"></span></div>
+    <div id="introPath">
+      <svg viewBox="0 0 820 4" preserveAspectRatio="none">
+        <path class="intro-dash" d="M 0 2 L 820 2"></path>
+      </svg>
+      <div id="introDot" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div id="globeContainer" class="fixed inset-0">
+    <div class="globe-loading">Initializing globe…</div>
+  </div>
+
+  <div id="globeTooltip" role="tooltip" aria-live="polite"></div>
+
+  <div id="errorPanel" role="alert" aria-live="assertive"></div>
+
+  <!-- Info panel — click popup for arcs and countries -->
+  <div id="infoPanel" role="dialog" aria-live="polite">
+    <button id="infoClose" aria-label="Close">×</button>
+    <div id="infoBody"></div>
+  </div>
+
+  <!-- GDP color legend -->
+  <div id="gdpLegend">
+    <div class="ttl">GDP per capita (2024) <span class="src">(WB)</span></div>
+    <div class="bar" style="background: linear-gradient(to right, #1e293b 0%, #0e7490 50%, #fbbf24 100%)"></div>
+    <div class="labels"><span>$500</span><span>$20k</span><span>$120k</span></div>
+    <div class="nd"><span class="sw"></span> No data</div>
+    <div class="bdr"><span class="bdr-swatch bdr-solid"></span> Outflow Country</div>
+    <div class="bdr"><span class="bdr-swatch bdr-dashed"></span> Destination Country</div>
+    <div class="ft">Height · outflow volume ÷ GDP per capita</div>
+  </div>
+
+  <!-- Scroll hint — signals that the overview sheet can be pulled up -->
+  <div id="scrollHint" aria-hidden="true">
+    <svg class="scroll-hint-arrow" width="22" height="12" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="1,11 11,2 21,11"></polyline>
+    </svg>
+    <div class="scroll-hint-label">Scroll for overview</div>
+  </div>
+
+  <!-- Overview Reveal Sheet -->
+  <div id="overviewSheet" role="dialog" aria-label="Global migration overview">
+    <button class="sheet-handle" id="sheetClose" aria-label="Close overview">&#x2304;</button>
+    <div class="sheet-hero">
+      <div class="hero-stat" id="heroStat">0.0M</div>
+      <div class="hero-label">Migrant Workers Worldwide</div>
+      <div class="hero-cite">— Migration Data Portal — Labour Migration Statistics (2022)</div>
+      <div class="hero-def" id="heroDef">
+        <div class="hero-def-quote" id="heroDefQuote"></div>
+        <div class="hero-def-source" id="heroDefSource"></div>
+      </div>
+    </div>
+    <div class="sheet-charts">
+      <div class="chart-block">
+        <div class="chart-title">Top Destination Countries</div>
+        <svg id="pieDest" viewBox="-160 -160 320 320" aria-hidden="true"></svg>
+      </div>
+      <div class="chart-block">
+        <div class="chart-title">Top Outflow Countries</div>
+        <svg id="pieOrig" viewBox="-160 -160 320 320" aria-hidden="true"></svg>
+      </div>
+    </div>
+    <div class="sheet-sources">
+      <h3>Bibliography</h3>
+      <ol id="sourcesList"></ol>
+    </div>
+  </div>
+  <div id="pieTooltip" class="pie-tooltip"></div>
+
+  <script src="js/error-handler.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

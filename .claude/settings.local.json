@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init *)",
+      "Bash(mkdir -p .claude src/data src/assets docs)",
+      "Bash(/usr/bin/git init *)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//usr/local/bin/**)",
+      "Bash(brew list *)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:visibleearth.nasa.gov)",
+      "WebFetch(domain:eoimages.gsfc.nasa.gov)",
+      "WebFetch(domain:earthobservatory.nasa.gov)",
+      "Bash(python3 -c \"from PIL import Image; img = Image.open\\('/Users/larabi/Desktop/_CCode/Globe/src/assets/night-earth.jpg'\\); print\\(img.size\\)\")",
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/larabi/Desktop/_CCode/Globe/src/assets/night-earth.jpg)",
+      "Bash(python3 *)",
+      "Bash(sips -Z 4096 -s format jpeg -s formatOptions 78 /Users/larabi/Desktop/_CCode/Globe/src/assets/night-earth.jpg --out /Users/larabi/Desktop/_CCode/Globe/src/assets/night-earth-web.jpg)",
+      "Bash(sips -Z 8192 -s format jpeg -s formatOptions 82 /Users/larabi/Desktop/_CCode/Globe/src/assets/night-earth.jpg --out /Users/larabi/Desktop/_CCode/Globe/src/assets/night-earth-web.jpg)",
+      "WebFetch(domain:www.worldometers.info)",
+      "Bash(grep *)"
+    ]
+  }
+}
