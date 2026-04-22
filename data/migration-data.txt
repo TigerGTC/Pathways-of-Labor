@@ -7,6 +7,12 @@ International labor migration shapes the global economy, with an estimated 167.7
 
 Source: EBSCO Research Starters — Migrant Worker
 
+## Outflow Country
+> An outflow country (or country of origin) is a nation from which workers emigrate to seek employment abroad, typically driven by limited domestic opportunities, lower wages, or economic instability.
+
+## Destination Country
+> A destination country (or country of destination) is a nation that receives migrant workers, typically offering higher wages, labor demand, or better economic conditions that attract foreign labor.
+
 ## Corridors
 | Origin City | Origin Country | Origin Lat | Origin Lng | Dest City | Dest Country | Dest Lat | Dest Lng | Volume | Year | Primary Sector | Source |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -59,3 +65,4 @@ Source: EBSCO Research Starters — Migrant Worker
 13. REST Countries API v3.1 — live country metadata (region, subregion, capital, population, currencies, languages). https://restcountries.com
 14. World Bank Open Data API — live GDP per capita (indicator NY.GDP.PCAP.CD), 2024. https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.CD
 15. EBSCO Information Services. "Migrant Worker." *Research Starters: Social Sciences and Humanities*. Accessed April 21, 2026. https://www.ebsco.com/research-starters/social-sciences-and-humanities/migrant-worker
+16. Migration Data Portal. "Labour Migration Statistics." 2022. https://www.migrationdataportal.org/themes/labour-migration

@@ -269,6 +269,8 @@
       const sources = [];
       let definitionText = '';
       let definitionSource = '';
+      let outflowText = '';
+      let destText = '';
       let headerParsed = false;
 
       for (let i = 0; i < lines.length; i++) {
@@ -280,6 +282,8 @@
         if (trimmed.startsWith('## Regional Volumes')) { mode = 'regions'; headerParsed = false; continue; }
         if (trimmed.startsWith('## Sources')) { mode = 'sources'; continue; }
         if (trimmed.startsWith('## Migrant Worker')) { mode = 'definition'; continue; }
+        if (trimmed.startsWith('## Outflow Country')) { mode = 'outflow'; continue; }
+        if (trimmed.startsWith('## Destination Country')) { mode = 'destination'; continue; }
         if (trimmed.startsWith('## ') && mode !== null) { mode = null; continue; }
 
         if (mode === 'corridors') {
@@ -344,9 +348,19 @@
             definitionSource = trimmed.replace(/^source:\s*/i, '').trim();
           }
         }
+
+        if (mode === 'outflow') {
+          if (trimmed.startsWith('>')) outflowText = trimmed.slice(1).trim();
+          continue;
+        }
+
+        if (mode === 'destination') {
+          if (trimmed.startsWith('>')) destText = trimmed.slice(1).trim();
+          continue;
+        }
       }
 
-      return { corridors, regions, sources, definition: { text: definitionText, source: definitionSource } };
+      return { corridors, regions, sources, definition: { text: definitionText, source: definitionSource }, outflow: outflowText, destination: destText };
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -1978,6 +1992,15 @@
           if (defSourceEl && migrationData.definition.source) {
             defSourceEl.textContent = '— ' + migrationData.definition.source;
           }
+        }
+
+        const outflowQuoteEl = document.getElementById('outflowDefQuote');
+        if (outflowQuoteEl && migrationData.outflow) {
+          outflowQuoteEl.textContent = '“' + migrationData.outflow + '”';
+        }
+        const destQuoteEl = document.getElementById('destDefQuote');
+        if (destQuoteEl && migrationData.destination) {
+          destQuoteEl.textContent = '“' + migrationData.destination + '”';
         }
 
         // ── Sources bibliography ──────────────────────────────────

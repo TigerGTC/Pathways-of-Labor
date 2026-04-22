@@ -7,6 +7,12 @@ International labor migration shapes the global economy, with an estimated 167.7
 
 Source: EBSCO Research Starters — Migrant Worker
 
+## Outflow Country
+> An outflow country (or country of origin) is a nation from which workers emigrate to seek employment abroad, typically driven by limited domestic opportunities, lower wages, or economic instability.
+
+## Destination Country
+> A destination country (or country of destination) is a nation that receives migrant workers, typically offering higher wages, labor demand, or better economic conditions that attract foreign labor.
+
 ## Corridors
 | Origin City | Origin Country | Origin Lat | Origin Lng | Dest City | Dest Country | Dest Lat | Dest Lng | Volume | Year | Primary Sector | Source |
 |---|---|---|---|---|---|---|---|---|---|---|---|

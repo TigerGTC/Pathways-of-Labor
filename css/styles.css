@@ -142,6 +142,14 @@
       border-top: 1px solid rgba(251, 191, 36, 0.15);
       padding-top: 1rem;
     }
+    .hero-def-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.25rem;
+    }
     .hero-def-quote {
       font-family: Georgia, serif;
       font-style: italic;
