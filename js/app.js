@@ -2178,7 +2178,80 @@
           }
         }, { passive: false, capture: true });
 
-        if (sheetClose) sheetClose.addEventListener('click', closeSheet);
+        // ── ScrollHint: click + drag to open ──────────────────────
+        const scrollHintEl = document.getElementById('scrollHint');
+        if (scrollHintEl) {
+          scrollHintEl.style.cursor = 'pointer';
+          scrollHintEl.style.pointerEvents = 'auto';
+          let hintDragging = false;
+          let hintStartY = 0;
+          let hintWasDragged = false;
+
+          scrollHintEl.addEventListener('pointerdown', (e) => {
+            if (!introDone || revealProgress > 0) return;
+            hintDragging = true;
+            hintWasDragged = false;
+            hintStartY = e.clientY;
+            scrollHintEl.setPointerCapture(e.pointerId);
+            closeInfoPanel();
+            e.preventDefault();
+          });
+
+          scrollHintEl.addEventListener('pointermove', (e) => {
+            if (!hintDragging) return;
+            const dy = hintStartY - e.clientY;
+            if (Math.abs(dy) > 5) hintWasDragged = true;
+            applyReveal(Math.max(0, Math.min(1, dy / (window.innerHeight * 0.7))), false);
+          });
+
+          scrollHintEl.addEventListener('lostpointercapture', () => {
+            if (!hintDragging) return;
+            hintDragging = false;
+            snapReveal();
+          });
+
+          scrollHintEl.addEventListener('click', (e) => {
+            if (!introDone || revealProgress > 0) return;
+            if (hintWasDragged) { hintWasDragged = false; return; }
+            e.stopPropagation();
+            closeInfoPanel();
+            applyReveal(1, true);
+          });
+        }
+
+        // ── SheetClose handle: click + drag to close ──────────────
+        if (sheetClose) {
+          let handleDragging = false;
+          let handleStartY = 0;
+          let handleWasDragged = false;
+
+          sheetClose.addEventListener('pointerdown', (e) => {
+            if (revealProgress < 0.99) return;
+            handleDragging = true;
+            handleWasDragged = false;
+            handleStartY = e.clientY;
+            sheetClose.setPointerCapture(e.pointerId);
+            e.preventDefault();
+          });
+
+          sheetClose.addEventListener('pointermove', (e) => {
+            if (!handleDragging) return;
+            const dy = e.clientY - handleStartY;
+            if (Math.abs(dy) > 5) handleWasDragged = true;
+            applyReveal(Math.max(0, Math.min(1, 1 - dy / (window.innerHeight * 0.7))), false);
+          });
+
+          sheetClose.addEventListener('lostpointercapture', () => {
+            if (!handleDragging) return;
+            handleDragging = false;
+            snapReveal();
+          });
+
+          sheetClose.addEventListener('click', (e) => {
+            if (handleWasDragged) { handleWasDragged = false; return; }
+            closeSheet();
+          });
+        }
 
         // ESC key dismisses info panel
         window.addEventListener('keydown', (e) => {
