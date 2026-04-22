@@ -2058,7 +2058,7 @@
           else if (r < 0.95 && globePaused) { globe.start(); globePaused = false; }
 
           // Per-slice staggered reveal — driven by r, same window as hero count-up
-          const pieP = clamp((r - 0.35) / 0.65, 0, 1);
+          const pieP = clamp((r - 0.7) / 0.3, 0, 1);
           const pieGroups = [
             ...(pieDestScale ? pieDestScale.querySelectorAll('.slice-wrap') : []),
             ...(pieOrigScale ? pieOrigScale.querySelectorAll('.slice-wrap') : []),
