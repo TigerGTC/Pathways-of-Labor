@@ -59,3 +59,4 @@ Source: EBSCO Research Starters — Migrant Worker
 13. REST Countries API v3.1 — live country metadata (region, subregion, capital, population, currencies, languages). https://restcountries.com
 14. World Bank Open Data API — live GDP per capita (indicator NY.GDP.PCAP.CD), 2024. https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.CD
 15. EBSCO Information Services. "Migrant Worker." *Research Starters: Social Sciences and Humanities*. Accessed April 21, 2026. https://www.ebsco.com/research-starters/social-sciences-and-humanities/migrant-worker
+16. Migration Data Portal. "Labour Migration Statistics." 2022. https://www.migrationdataportal.org/themes/labour-migration
