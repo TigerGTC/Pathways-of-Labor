@@ -1996,11 +1996,11 @@
 
         const outflowQuoteEl = document.getElementById('outflowDefQuote');
         if (outflowQuoteEl && migrationData.outflow) {
-          outflowQuoteEl.textContent = '“' + migrationData.outflow + '”';
+          outflowQuoteEl.textContent = migrationData.outflow;
         }
         const destQuoteEl = document.getElementById('destDefQuote');
         if (destQuoteEl && migrationData.destination) {
-          destQuoteEl.textContent = '“' + migrationData.destination + '”';
+          destQuoteEl.textContent = migrationData.destination;
         }
 
         // ── Sources bibliography ──────────────────────────────────
