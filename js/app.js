@@ -1981,8 +1981,8 @@
         const destSlices = topSlices(destAgg);
         const origSlices = topSlices(origAgg);
         const pieTooltip = document.getElementById('pieTooltip');
-        const pieDestScale = renderPie(document.getElementById('pieDest'), destSlices, pieTooltip, 'from', 0.55);
-        const pieOrigScale = renderPie(document.getElementById('pieOrig'), origSlices, pieTooltip, 'to', 0.62);
+        const pieDestScale = renderPie(document.getElementById('pieDest'), destSlices, pieTooltip, 'from', 0.72);
+        const pieOrigScale = renderPie(document.getElementById('pieOrig'), origSlices, pieTooltip, 'to', 0.78);
 
         // Populate migrant-worker definition from data markdown
         if (migrationData.definition && migrationData.definition.text) {
