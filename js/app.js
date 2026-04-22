@@ -2058,7 +2058,7 @@
           else if (r < 0.95 && globePaused) { globe.start(); globePaused = false; }
 
           // Per-slice staggered reveal — driven by r like the hero count-up
-          const pieP = clamp((r - 0.5) / 0.5, 0, 1);
+          const pieP = clamp((r - 0.85) / 0.15, 0, 1);
           const pieGroups = [
             ...(pieDestScale ? pieDestScale.querySelectorAll('.slice-wrap') : []),
             ...(pieOrigScale ? pieOrigScale.querySelectorAll('.slice-wrap') : []),
@@ -2066,7 +2066,7 @@
           for (const g of pieGroups) {
             const idx = g._sliceIdx || 0;
             const cnt = g._sliceCount || 1;
-            const delay = (idx / Math.max(1, cnt - 1)) * 0.35;
+            const delay = (idx / Math.max(1, cnt - 1)) * 0.2;
             const local = clamp((pieP - delay) / (1 - delay), 0, 1);
             const e = easeOutCubic(local);
             g.setAttribute('transform', `rotate(${((1 - e) * -35).toFixed(2)}) scale(${(0.2 + e * 0.8).toFixed(3)})`);
@@ -2097,7 +2097,7 @@
             // Snap / close — animate animatedReveal → revealProgress over 700ms
             const startVal = animatedReveal;
             const endVal   = revealProgress;
-            const duration = 1200;
+            const duration = 1800;
             const startTime = performance.now();
 
             const tick = (now) => {
