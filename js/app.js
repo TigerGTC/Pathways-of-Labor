@@ -1,8 +1,8 @@
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
-    import { Line2 }         from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/lines/Line2.js';
-    import { LineMaterial }  from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/lines/LineMaterial.js';
-    import { LineGeometry }  from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/lines/LineGeometry.js';
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { Line2 }         from 'three/addons/lines/Line2.js';
+    import { LineMaterial }  from 'three/addons/lines/LineMaterial.js';
+    import { LineGeometry }  from 'three/addons/lines/LineGeometry.js';
 
     // GDP PER CAPITA — inline World Bank 2024 data (iso3 → USD)
     // 158 countries matched to Natural Earth 110m feature set.
