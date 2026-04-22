@@ -1857,14 +1857,8 @@
             // Per-slice wrapper for staggered reveal animation
             const sliceG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             sliceG.setAttribute('class', 'slice-wrap');
-            const sliceSpan  = 0.12;
-            const staggerRange = Math.max(0.05, 1.0 - pieOff - sliceSpan);
-            const sliceStart = pieOff + (i / Math.max(1, slices.length - 1)) * staggerRange;
-            sliceG._revealStart = sliceStart;
-            sliceG._revealSpan  = sliceSpan;
-            sliceG.setAttribute('data-start', sliceStart.toFixed(3));
-            sliceG.setAttribute('data-span',  sliceSpan.toFixed(3));
-            // Initial hidden state
+            sliceG._sliceIdx = i;
+            sliceG._sliceCount = slices.length;
             sliceG.setAttribute('transform', 'rotate(-35) scale(0.2)');
             sliceG.style.opacity = '0';
 
@@ -2050,42 +2044,6 @@
         let lastAppliedReveal = -1;
         let globePaused = false;
 
-        // ── Pie slice animation (independent of reveal progress) ──
-        let pieAnimStarted = false;
-        const allSliceGroups = [
-          ...(pieDestScale ? pieDestScale.querySelectorAll('.slice-wrap') : []),
-          ...(pieOrigScale ? pieOrigScale.querySelectorAll('.slice-wrap') : []),
-        ];
-        const totalSlices = allSliceGroups.length;
-
-        const resetPieSlices = () => {
-          for (const g of allSliceGroups) {
-            g.setAttribute('transform', 'rotate(-35) scale(0.2)');
-            g.style.opacity = '0';
-          }
-        };
-
-        const startPieAnimation = () => {
-          const duration = 900;
-          const t0 = performance.now();
-          const animatePies = (now) => {
-            const elapsed = now - t0;
-            const t = clamp(elapsed / duration, 0, 1);
-            for (let i = 0; i < totalSlices; i++) {
-              const g = allSliceGroups[i];
-              const staggerDelay = (i / Math.max(1, totalSlices - 1)) * 0.45;
-              const local = clamp((t - staggerDelay) / (1 - staggerDelay * 0.6), 0, 1);
-              const e = easeOutCubic(local);
-              const rot   = (1 - e) * -35;
-              const scale = 0.2 + e * 0.8;
-              g.setAttribute('transform', `rotate(${rot.toFixed(2)}) scale(${scale.toFixed(3)})`);
-              g.style.opacity = e.toFixed(3);
-            }
-            if (t < 1) requestAnimationFrame(animatePies);
-          };
-          requestAnimationFrame(animatePies);
-        };
-
         // applyVisuals(r) — drives all visuals from a single value r ∈ [0,1]
         const applyVisuals = (r) => {
           if (Math.abs(r - lastAppliedReveal) < 0.002 && r !== 0 && r !== 1) return;
@@ -2099,13 +2057,20 @@
           if (r >= 0.95 && !globePaused) { globe.stop(); globePaused = true; }
           else if (r < 0.95 && globePaused) { globe.start(); globePaused = false; }
 
-          // Pie animation — triggered independently after sheet settles
-          if (r >= 0.999 && !pieAnimStarted) {
-            pieAnimStarted = true;
-            startPieAnimation();
-          } else if (r < 0.5 && pieAnimStarted) {
-            pieAnimStarted = false;
-            resetPieSlices();
+          // Per-slice staggered reveal — driven by r, same window as hero count-up
+          const pieP = clamp((r - 0.35) / 0.65, 0, 1);
+          const pieGroups = [
+            ...(pieDestScale ? pieDestScale.querySelectorAll('.slice-wrap') : []),
+            ...(pieOrigScale ? pieOrigScale.querySelectorAll('.slice-wrap') : []),
+          ];
+          for (const g of pieGroups) {
+            const idx = g._sliceIdx || 0;
+            const cnt = g._sliceCount || 1;
+            const delay = (idx / Math.max(1, cnt - 1)) * 0.35;
+            const local = clamp((pieP - delay) / (1 - delay), 0, 1);
+            const e = easeOutCubic(local);
+            g.setAttribute('transform', `rotate(${((1 - e) * -35).toFixed(2)}) scale(${(0.2 + e * 0.8).toFixed(3)})`);
+            g.style.opacity = e.toFixed(3);
           }
 
           // Hero count-up and scale — window shifted so animations play during the visible slide
