@@ -1,96 +1,207 @@
-# Building Pathways of Labor with Claude Code
+# Building "Pathways of Labor" with Claude Code
 
-## What this is
+## What this document is
 
-"Pathways of Labor" is a single-file interactive data portrait (`index.html`) visualizing international labor migration on a Three.js globe. This document records how it was built using Claude Code, the patterns that worked, and the process discipline that kept the project coherent across many iterative sessions.
+This is the full story of how "Pathways of Labor" — an interactive data portrait visualizing international labor migration on a 3D globe — was built entirely through collaboration between a human author (Geoffrey / Larabi) and Claude Code (Anthropic's AI coding assistant). It covers how the project started, the iterative process of building it across multiple sessions, how visual and architectural decisions were made, and the discipline that kept it coherent across dozens of rounds of refinement.
 
-## Architectural constraints (author-imposed)
+---
 
-- **Single HTML file, no build step.** All logic, markup, and styles in one file. CDN-only dependencies (Three.js r160, Chart.js 4.4.1, Tailwind v4). Portable — opens in any browser, no toolchain.
-- **Data as source of truth.** `src/data/migration-data.md` holds all 20 corridors, 8 regional volumes, and 9 Chicago-style citations. Code reads from there; no hardcoded numbers inline.
-- **Local assets for critical textures.** NASA Night Earth (7.7MB) hosted locally to avoid CDN drift and offline failures.
+## How it started
 
-## The hard-wired tier rule
+The project began as a class assignment: create a "data portrait" — a visualization that tells a human story through data. Geoffrey chose international labor migration because the data carries real weight: 167.7 million migrant workers worldwide, moving along corridors shaped by wage gaps, colonial history, and economic gravity.
 
-The defining discipline of this project: **Opus orchestrates, Sonnet executes.** Codified in the project `CLAUDE.md` as non-negotiable:
+### The research phase
 
-- **Opus** handles every planning, architecture, trade-off, and approval decision — the top-level session talking to the author is always Opus.
-- **Sonnet** handles every file write, code edit, command run, and mechanical research task — every `Agent` spawn on this project is an explicitly-specified Sonnet subagent.
+Before any code was written, Geoffrey compiled a research document (`docs/Research Data for Data Portrait.md`) drawing from ILO global estimates, UN DESA migrant stock data, World Bank remittance flows, and IMF GDP per capita figures. This wasn't just data gathering — it was framing the narrative. The research identified the key corridors (Philippines → Saudi Arabia, Bangladesh → UAE, Mexico → USA, etc.), the economic drivers (the wage gap as the primary force), and the human systems behind the numbers (the GCC Kafala sponsorship system, private recruitment agencies, specific visa classes).
 
-Rationale: Opus has the reasoning depth for load-bearing architectural calls; Sonnet is fast and cost-efficient for well-scoped execution. The split prevents Opus from burning context on mechanical work and prevents Sonnet from making decisions that need more judgment.
+The bibliography was built in Chicago style from the start — ILO, UN DESA, World Bank/KNOMAD, IMF, BBVA Research, IOM — establishing an academic rigor that would carry through to the final product.
 
-## Workflow shape
+### The initial vision
 
-Non-trivial work follows four phases:
+Geoffrey's concept was ambitious: not a flat chart or a static map, but an interactive 3D globe where migration corridors arc across the surface, countries light up based on economic data, and the viewer can explore the data spatially. The question that would eventually become the intro animation's typewriter text — "How do migrant workers move around the world?" — was the driving design question from day one.
 
-1. **Explore.** Read relevant code. Understand current state. No changes.
-2. **Plan.** Propose an approach, surface trade-offs, wait for approval.
-3. **Implement.** Execute the plan via Sonnet subagents. Verify after each step.
-4. **Commit.** Concise conventional commits, split logically.
+---
 
-Trivial tasks skip straight to implementation.
+## The Claude Code workflow
 
-## State discipline
+### The two-tier model rule
 
-Three files carry project memory, each with a distinct role:
+The most distinctive aspect of this build was a strict model separation rule, codified in the project's `CLAUDE.md` as non-negotiable:
+
+- **Opus** (the more capable reasoning model) handles all orchestration: planning, architecture, trade-off analysis, design decisions, debugging strategy, and approval gates.
+- **Sonnet** (the faster execution model) handles all implementation: every file write, code edit, command execution, and mechanical task is delegated to a Sonnet subagent.
+
+This wasn't arbitrary. The rationale was practical: Opus has superior reasoning for architectural judgment and adversarial analysis, but burns context quickly on mechanical work. Sonnet is fast, cost-efficient, and reliable for well-scoped execution. The clean separation meant Opus could focus on *what* to build and *why*, while Sonnet focused on *how* — with explicit briefings that included exact file paths, line numbers, target code blocks, and constraints.
+
+Every Sonnet subagent spawn followed a pattern: the prompt read like a compressed technical design doc, with enough context that the subagent could make judgment calls on edge cases without guessing or fabricating. This pattern held across every single file-write in the project.
+
+### The four-phase workflow
+
+Non-trivial work followed a consistent cycle:
+
+1. **Explore** — Read relevant code, understand current state. No changes yet.
+2. **Plan** — Propose an approach, surface trade-offs, get Geoffrey's approval. No implementation.
+3. **Implement** — Execute the plan via Sonnet subagents, with verification after each step.
+4. **Commit** — Concise conventional commits (`feat:`, `fix:`, `chore:`, `docs:`), split logically.
+
+Trivial tasks (small text changes, single-line fixes) skipped straight to implementation. The judgment of what was "trivial" was itself an Opus-level decision.
+
+### State discipline across sessions
+
+Three files carried project memory across Claude Code sessions, each with a distinct role:
 
 - **`.claude/STATUS.md`** — 30-second orientation. What exists now, what's next.
-- **`.claude/WORKSTREAMS.md`** — priority tracker. Active, done, blocked, backlog.
-- **`docs/PLAYBOOK.md`** — deep workstream memory. Technical decisions, gotchas, root causes, architectural choices. Survives context compression when conversation history doesn't.
+- **`.claude/WORKSTREAMS.md`** — Priority tracker. Active, done, blocked, backlog.
+- **`docs/PLAYBOOK.md`** — Deep workstream memory. Technical decisions, gotchas, root causes, architectural choices.
 
-Session start: read STATUS + WORKSTREAMS silently, summarize in 2–3 lines, ask what's next.
-Session end: update the repo-local files.
-At ~40% context usage: mandatory checkpoint — flush all state to the files above.
+At the start of every session, Claude Code would read STATUS and WORKSTREAMS silently, summarize the current state in 2–3 lines, and ask what's next. At the end, the repo-local files were updated. At ~40% context usage in long sessions, a mandatory checkpoint flushed all state to these files.
 
-## Build arc (what actually got built, in order)
+This discipline was critical because Claude Code sessions don't share memory by default — each conversation starts fresh. Without these files, each session would re-derive the project's entire arc from commit messages and code reading. The state files meant Geoffrey could pick up exactly where he left off, every time.
 
-### v1 scaffolding
-- Repo structure, README with full spec, project `CLAUDE.md` with tier rule
-- Research into `globe.gl` (rejected — too opinionated, adopted bespoke Three.js)
-- NASA Night Earth texture fetched locally
-- Migration data scaffolded: 20 corridors, 8 regions, Chicago citations
-- Architecture plan approved (minimal-slice Three.js rebuild)
-- `index.html` written: ~1058 lines, 45KB, all three sections (Context / Interactive Launch / Sources Footer)
-- SRI hashes on all CDN loads, no `innerHTML` with user-derived data
+---
 
-### Iterative refinement (each bullet = one user round-trip)
+## The build arc: from v1 to final product
 
-1. **Scroll hijack + pie timing.** Decoupled JS animations from instantaneous `revealProgress` by introducing an rAF-driven `animatedReveal`. Pie scale animations now trigger at `r = 0.55` and finish by `r = 0.67`, before the sheet reaches the top.
-2. **Full-bleed sheet.** Dropped border-radius and height constraints — sheet fills 100vh.
-3. **Country borders.** Amber borders on origin countries (solid) and destination countries (dashed). Upgraded from `THREE.Line` (1px on most GPUs) to `Line2` / `LineMaterial` / `LineGeometry` for true pixel-width rendering (2.5px solid, 3px dashed). Pulse with arcs. Legend swatches added.
-4. **Intro cinematic.** Typewriter "How do migrant workers move around the world?" then a horizontal line slides in from the left, a dot replaces a flag, the real `#globeContainer` rolls in from `translateX(-80vw) rotate(0)` to `translateX(0) rotate(720deg)` (normalized to 360°). Slowed to 4500ms so the user can actually watch the roll. Line height computed from FOV/camera/radius so the globe's bottom tangent matches the demo camera geometry.
-5. **Stacking context fix.** Intro line invisible despite `z-index: 55` — `#introOverlay` at `z:40` was creating a stacking context that trapped children below `#globeContainer` at `z:50`. Bumped overlay to `z:60`.
-6. **Hover/drag decoupling.** Suppress country hover raycasts while the user is dragging or zooming the globe.
-7. **Scroll-up lag.** Created timestamped backup (`index.backup-2026-04-20.html`), then optimized: deferred backdrop-filter via `.settled` class at `r ≥ 0.999`, paused Three.js animation loop when sheet is ≥ 95% open, cached `_revealStart` and `_revealSpan` as DOM properties to avoid per-frame `parseFloat`.
-8. **Extruded country prisms.** Origin countries had their altitude lifted by outflow score but rendered as floating caps. Added `buildSideWallMesh` helper — walls span `COUNTRY_BASE_ALTITUDE` (0.012) to `topAltitude` (up to 0.092). Opacity 0.95, `depthWrite: true` to prevent the back-wall bleed-through that scuttled the earlier attempt.
-9. **Hover suppression on sheet-open.** Tooltip was following the cursor over the pie charts. Added an `#interactive` private flag on the Globe class, gated `#raycast()` on it, and extended `setInteractive(false)` to call `#clearCountryHover()` + `#hideTooltip()` on the disable transition. The reveal controller already flips this the moment `revealProgress` leaves 0.
+### Phase 1: Research and scaffolding
 
-### Gotchas surfaced and documented
+The first phase was pure research and planning. Geoffrey compiled migration statistics, identified data sources, and worked with Claude Code to evaluate visualization approaches. The key architectural decision came early:
 
-Preserved in `docs/globe-rebuild-notes.md` and `docs/PLAYBOOK.md`:
-- Antimeridian-crossing polygon winding (hover ghost regions — backlog item)
-- Raycast cost over full mesh list every frame (backlog item: throttle or BVH)
-- CSS stacking context traps from `z-index` without explicit `position` layering
-- NASA texture color space (must be `SRGBColorSpace` in Three.js r160+)
-- earcut winding for GeoJSON ring orientation (outer CCW, holes CW from above)
+**globe.gl was evaluated and rejected.** The rationale (documented in `docs/globe-rebuild-notes.md`) was thorough: globe.gl pulls in ~12 transitive dependencies, none of which can be quickly audited. For a visualization handling real labor-route data, minimizing third-party runtime code was a first-class constraint. The required feature slice — sphere with texture, orbit controls, atmosphere glow, point markers, arc animations, raycaster tooltip — landed at ~325 lines of application code. "Write it ourselves and own it fully" beat "accept a large opaque dependency."
 
-## Agent spawn pattern
+This decision shaped everything that followed: bespoke Three.js code, hand-rolled geometry, inlined d3-geo interpolation (~10 lines replacing the entire d3 dependency), and a security posture where every line running in the visitor's browser could be traced to a deliberate decision.
 
-Every file-write on this project has gone through a Sonnet subagent with a briefing that includes:
-- Exact file path and line numbers
-- The target code block verbatim
-- Constraints (don't touch X, don't change Y, single-file only)
-- Verification instructions (re-read range, report diff)
+### Phase 2: The v1 single-file build (1,058 lines)
 
-A typical prompt reads like a compressed technical design doc — enough context that the subagent can make judgment calls on edge cases without guessing or fabricating.
+The initial implementation was a single HTML file — all logic, markup, and styles in one place. CDN-only dependencies (Three.js r160, Chart.js 4.4.1 for bar charts, Tailwind v4 for utility CSS). The constraints were author-imposed:
 
-## Why this discipline
+- **No build step.** Portable — opens in any browser, no toolchain.
+- **Data as source of truth.** `src/data/migration-data.md` holds all 20 corridors, 8 regional volumes, and citations. Code reads from there; no hardcoded numbers inline.
+- **Local assets for critical textures.** NASA Night Earth (7.7 MB) hosted locally to avoid CDN drift and offline failures.
+- **SRI hashes on all CDN loads.** No `innerHTML` with user-derived data. Security was baked in from the start, not bolted on.
 
-A 1000-line single-file app with CDN-only dependencies sounds simple until it hits 20 iterative rounds of visual refinement. Without the tier split, Opus's context burns down on mechanical string replacements. Without the state files, each session re-derives the project's arc from commit messages. Without the playbook, gotchas get re-discovered and re-fixed every time. The discipline is the load-bearing structure — the HTML file is just the output.
+The v1 had a working globe with textured sphere, amber migration arcs, city-point markers, orbit controls, and a three-section layout (Context / Interactive Globe / Sources Footer). Chart.js rendered regional volume bar charts.
+
+### Phase 3: Iterative visual refinement (20+ rounds)
+
+This is where the project transformed from functional to polished. Each round was a single user request → Claude Code response cycle, and each one is logged in the change log below. The key visual decisions, in roughly chronological order:
+
+**The scroll-reveal sheet.** Geoffrey wanted the overview data to feel like pulling up a drawer, not clicking a button. This led to the wheel-hijack interaction: scrolling down at max zoom-out pulls up a full-viewport sheet with statistics and charts. This required decoupling JS animations from instantaneous scroll position by introducing an rAF-driven `animatedReveal` value — one of the project's most complex pieces of interaction code, refined across multiple iterations.
+
+**Pie charts replaced bar charts.** Chart.js bar charts were replaced with hand-drawn SVG pie charts for top destination and outflow countries. The labels went through their own iteration: internal labels were cramped and truncated, so they were redesigned as external labels on radial leader ticks with the full country name untruncated.
+
+**Country borders and elevation.** Origin countries got solid amber borders; destination countries got dashed borders. The initial THREE.Line implementation rendered at 1px on most GPUs regardless of settings — this was replaced with Line2/LineMaterial/LineGeometry for true pixel-width rendering (2.5px solid, 3px dashed). Later, the solid/dashed mapping was swapped (dashed for outflow, solid for destination) based on Geoffrey's visual preference.
+
+Origin countries were then given elevation — extruded upward based on outflow score, creating 3D prisms that make labor-exporting nations literally stand out. The first attempt had floating caps; the fix was a `buildSideWallMesh` helper that extrudes proper walls from base to top altitude, with `depthWrite: true` and opacity 0.95 to prevent back-wall bleed-through.
+
+**The intro cinematic.** This went through the most iterations of any single feature. The sequence: a typewriter types "How do migrant workers move around the world?", a horizontal line slides in from the left, and the globe rolls in from off-screen. The globe's entry animation went from `translateX(-80vw) rotate(720deg)` (later normalized to 360°) to a synchronized slide with the text. The initial version had a jarring pop-in from an opacity fade — this was replaced with the globe starting fully off-screen at `-115vw` with permanent opacity 1, sharing a symmetric easing curve with the text over 4800ms. After the intro, a post-intro camera pull-back (300 → 380 units over 1.2s) gives the globe breathing room.
+
+**Flow dots on arcs.** Small white dots traveling along migration arcs were added, then resized (they were swallowing heavy-volume corridors), then removed entirely at Geoffrey's direction. The backup/revert discipline meant this was a clean rollback, not a messy undo.
+
+**The scroll hint indicator.** A subtle gold up-chevron with "Scroll for overview" at the bottom of the viewport, fading in after the intro and fading out as the sheet rises. Later enhanced with click-to-open and drag-to-open interactions (and corresponding drag-to-close on the sheet handle), giving the sheet a native bottom-sheet feel.
+
+**The migrant worker definition.** A pull-quote in the hero section, data-driven from the markdown source. Went through multiple iterations: started with the ILO Convention No. 97 (1949) definition, then swapped to the EBSCO Research Starters phrasing. Later, "Outflow Country" and "Destination Country" definitions were added underneath, then shortened to single sentences without quotes (since they weren't sourced from a specific citation).
+
+**GDP color legend.** Countries colored by GDP per capita (World Bank data), with a color ramp from deep blue (low) through green to warm amber (high). The GDP data went through its own accuracy pass: the inline fallback was WB 2024 data but the legend claimed 2022 — this was caught and aligned. The hero stat source was updated to distinguish reference year from publication year.
+
+### Phase 4: The self-contained experiment and its reversal
+
+At one point, Geoffrey had the entire project inlined into a single HTML file: the GeoJSON (~820 KB), migration data (~6 KB), and the Night Earth texture (~2.6 MB, base64-encoded to ~3.5 MB) — all embedded as `<script>` containers. The three `fetch()` calls were replaced with DOM reads. The result was a 4.6 MB HTML file that was truly double-clickable — no server, no asset folder. This was the logical extreme of the "single file, no build step" constraint.
+
+The backup files tell this story: `index.backup-2026-04-20.html` (105 KB, pre-inline), `index.backup-2026-04-21.html` (4.6 MB, with inlined assets), `index.backup-2026-04-21-pre-enhancements.html` (4.6 MB, pre-enhancement-batch).
+
+### Phase 5: The adversarial review and enhancement batch
+
+Two independent adversarial reviews of the codebase were conducted, producing `docs/enhancement_plans.md` — a force-ranked list of 10 enhancements. Several review findings were rejected as false positives (e.g., "missing functions / app non-functional" — the reviewer saw a partial view of a 4000+ line file; "externalize data / decompose via bundler" — contradicts the author-imposed constraints).
+
+Nine enhancements were implemented in a single batch across three waves:
+- **Wave 1:** Magic-number extraction (15 named constants), unified name-to-ISO3 Map with diacritics-stripping normalization, innerHTML→createElement security fix on pie tooltip, `.dispose()` hardening on all 5 mesh-replacement paths, raycast throttle at 66ms.
+- **Wave 2:** `prefers-reduced-motion` respect (CSS overrides + JS intro skip + arc pulse gate), earcut triangulation offloaded to inline Blob Web Worker with sync fallback.
+- **Wave 3:** Pull-tab pointer drag for sheet reveal, full keyboard navigation (arrow-key corridor cycling, Enter to open info, screen reader announcements via aria-live region, focus ring on globe container).
+
+The file grew from 2,777 to 3,061 lines. Then, based on Geoffrey's assessment of the result, the entire batch was reverted to the pre-enhancement backup — a clean rollback that demonstrated the value of the timestamped backup discipline.
+
+### Phase 6: Restructuring to a standard static site
+
+The final architectural move: breaking the single HTML file into a proper static site structure for Vercel deployment:
+- `index.html` — slim 118-line shell with markup only
+- `js/app.js` — 2,283 lines of application logic
+- `css/styles.css` — 382 lines of styles
+- `data/migration-data.txt` — the data source
+- `data/countries-110m.json` — GeoJSON
+- `assets/` — textures
+
+This restructuring also surfaced a cross-browser compatibility bug: the importmap-based Three.js loading worked in modern Chrome but failed silently in Safari < 16.4 and Firefox < 108. The fix was adding the `es-module-shims` polyfill — diagnosed by tracing the symptom (blinking CSS cursor, no JS execution) back to the root cause (bare specifier `'three'` used internally by Three.js addon modules, unresolvable without importmap support).
+
+---
+
+## Visual design decisions and their rationale
+
+Every visual choice in this project was Geoffrey's. Claude Code proposed options and trade-offs; Geoffrey chose. The key decisions:
+
+- **Amber as the primary accent color** (`#fbbf24`) — warm, high-contrast against the dark globe, evocative of labor and warmth without being aggressive. Used for arcs, borders, legends, UI chrome, and the scroll hint.
+- **NASA Night Earth texture** — shows the world as interconnected points of light, not political boundaries. The visual metaphor: migration follows economic gravity, and economic activity concentrates where the lights are.
+- **Dark background with glassmorphic overlay** — the sheet uses `backdrop-filter: blur(14px)` with semi-transparent dark gradients. Academic tone without being sterile.
+- **Georgia serif italic for definitions** — pull-quotes use a serif font at 1.35rem, establishing a typographic hierarchy that signals "this is a cited definition" without needing explicit framing.
+- **Uppercase small-caps for metadata** — source citations, legend labels, and the scroll hint use 0.68rem uppercase with wide letter-spacing. Subtle, readable, doesn't compete with the data.
+- **The globe entry animation** — the roll-in from off-screen was a deliberate choice to make the globe feel like a physical object entering the frame, not a digital element appearing. The 4800ms duration was tuned to feel deliberate without being slow.
+- **Dashed vs. solid borders** — dashed for outflow (origin) countries, solid for destination countries. The visual logic: dashed lines suggest departure/openness; solid lines suggest arrival/containment.
+- **3D extrusion on origin countries** — countries that export labor literally rise from the surface, proportional to their outflow score. This makes the data physically legible — you can see at a glance which nations are the major labor exporters.
+
+---
+
+## What worked about this process
+
+### The tier split prevented context burnout
+Opus never wrote a single line of code to a file. Every mechanical operation went through Sonnet. This meant Opus's context window stayed focused on architecture, trade-offs, and decision-making — the things that actually benefit from deeper reasoning. In a project with 20+ iterative rounds, this discipline is what kept sessions productive instead of degrading.
+
+### Backups enabled fearless iteration
+Timestamped backups before risky changes (`index.backup-2026-04-20.html`, `index.backup-2026-04-21.html`, `index.backup-2026-04-21-pre-enhancements.html`) meant Geoffrey could say "revert everything" at any point and get a clean rollback. This encouraged experimentation — features like flow dots were tried, evaluated, and cleanly removed when they didn't serve the visualization.
+
+### The state files enabled multi-session coherence
+STATUS.md, WORKSTREAMS.md, and the PLAYBOOK meant each new Claude Code session started with full context, not a cold start. The process doc itself (this file) became part of that memory — a living record that new sessions could read to understand not just *what* existed, but *why* and *how* it got there.
+
+### Adversarial review caught real issues
+The enhancement review identified genuine gaps (keyboard navigation, screen reader support, `.dispose()` leaks, innerHTML XSS surface) that iterative development had missed. Even though the batch implementation was reverted, the findings informed later targeted fixes.
+
+### The subagent briefing pattern produced reliable execution
+By giving Sonnet subagents explicit file paths, line numbers, verbatim code blocks, and constraints, the execution was consistently accurate. The pattern — brief the agent like a colleague who just walked in — minimized hallucination and maximized first-attempt success.
+
+---
+
+## The numbers
+
+- **Sessions:** 10+ Claude Code conversations across 3 days
+- **Iterative rounds:** 25+ request-response cycles with code changes
+- **v1 size:** 1,058 lines (single HTML file)
+- **Peak size:** ~3,061 lines / 4.6 MB (single file with inlined assets)
+- **Final size:** 2,783 lines across 3 files (118 HTML + 2,283 JS + 382 CSS)
+- **Data sources:** ILO, UN DESA, World Bank, POEA, BMET, DoFE Nepal, SLBFE, Eurostat, GCC-Stat, Migration Data Portal, NASA, Natural Earth, REST Countries API, EBSCO
+- **Migration corridors visualized:** 20
+- **Regional volumes tracked:** 8
+- **Bibliography entries:** 16 (Chicago style)
+- **Backups created:** 4 (timestamped, pre-change snapshots)
+- **Features tried and reverted:** 2 (flow dots, 9-enhancement batch)
+- **Cross-browser bugs diagnosed:** 1 (importmap compatibility — fixed with es-module-shims polyfill)
+
+---
 
 ## Change log
 
-Every request updates this file with a new entry below. Most recent at top.
+Every request that changes code appends an entry here. Most recent at top.
+
+---
+
+**2026-04-22 — Click and drag interactions for overview sheet.** Added click-to-open on the scroll hint indicator and drag-to-open (pointer events with snap-on-release). Same pattern inverted on the sheet handle chevron: click-to-close and drag-to-close. Sheet handle enlarged with grab cursor and touch-action support. Sonnet execution; `js/app.js`, `css/styles.css` touched.
+
+**2026-04-22 — Swapped border line styles.** Dashed borders now mark outflow (origin) countries, solid borders mark destination countries. Updated both the rendering logic in `setCountryBorders` and the legend swatches in `index.html`. Sonnet execution; `js/app.js`, `index.html` touched.
+
+**2026-04-22 — Cross-browser fix: es-module-shims polyfill.** Diagnosed blank page on non-local browsers — importmap not supported in older Safari/Firefox, causing entire JS module to fail silently (only CSS cursor blink visible). Restored importmap (required for Three.js internal bare specifier resolution) and added es-module-shims v1.10.1 as a polyfill. Sonnet execution; `index.html`, `js/app.js` touched.
+
+**2026-04-22 — Shortened outflow/destination definitions.** Reduced definitions to single sentences ("A nation from which workers emigrate to seek employment abroad." / "A nation that receives migrant workers.") and removed quotation marks since these are not sourced citations. Sonnet execution; `src/data/migration-data.md`, `data/migration-data.txt`, `js/app.js` touched.
+
+**2026-04-22 — Added outflow and destination country definitions.** New definition blocks for "Outflow Country" and "Destination Country" in the overview sheet hero section, parsed from the data markdown and rendered with label headers matching existing typography. Sonnet execution; `src/data/migration-data.md`, `data/migration-data.txt`, `index.html`, `js/app.js`, `css/styles.css` touched.
+
+**2026-04-22 — Added Migration Data Portal (2022) citation.** Appended Chicago-style bibliography entry #16 for the Migration Data Portal "Labour Migration Statistics" (2022) source. Sonnet execution; `src/data/migration-data.md`, `data/migration-data.txt` touched.
 
 ---
 
