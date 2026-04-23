@@ -2066,7 +2066,7 @@
           for (const g of pieGroups) {
             const idx = g._sliceIdx || 0;
             const cnt = g._sliceCount || 1;
-            const delay = (idx / Math.max(1, cnt - 1)) * 0.2;
+            const delay = (idx / Math.max(1, cnt - 1)) * 0.1;
             const local = clamp((pieP - delay) / (1 - delay), 0, 1);
             const e = easeOutCubic(local);
             g.setAttribute('transform', `rotate(${((1 - e) * -35).toFixed(2)}) scale(${(0.2 + e * 0.8).toFixed(3)})`);
